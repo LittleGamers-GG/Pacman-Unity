@@ -4,6 +4,7 @@ using UnityEngine;
 public class Pellet : MonoBehaviour
 {
     public int points = 10;
+    public Vector3 startingPosition { get; private set; }
 
     protected virtual void Eat()
     {
