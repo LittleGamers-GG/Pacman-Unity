@@ -21,7 +21,7 @@ public class Pacman : MonoBehaviour
     private void Update()               // SCRIPT A MODIFIER POUR IA TODOOOOOOOOOOOOOOOOOOO trouver heuristics
     {
 
-        PelletHeuristic();
+        //PelletHeuristic();
         /*
         // Set the new direction based on the current input
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -66,7 +66,7 @@ public class Pacman : MonoBehaviour
 
 
 
-    private void PelletHeuristic(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         Node node = other.GetComponent<Node>();
 
@@ -90,7 +90,7 @@ public class Pacman : MonoBehaviour
                     minDistance = distance;
                 }
             }
-
+            print("x:"+direction.x + "y:" + direction.y);
             movement.SetDirection(direction);
         }
     }
