@@ -7,8 +7,9 @@ public class Passage : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Vector3 position = connection.position;
-        position.z = other.transform.position.z;
+        Vector3 position = other.transform.position;
+        position.y = this.connection.position.y;
+        position.x = this.connection.position.x;
         other.transform.position = position;
     }
 

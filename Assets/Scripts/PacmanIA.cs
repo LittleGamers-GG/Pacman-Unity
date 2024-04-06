@@ -53,9 +53,9 @@ public class PacmanAI : MonoBehaviour
 
     private Vector2 UpdateDirection()
     {
-        float distanceToTargetWeight = 2.0f;
-        float avoidGhostsWeight = 0.0f;
-        float powerPelletWeight = 0.0f;
+        float distanceToTargetWeight = 1.0f;
+        float avoidGhostsWeight = 1.0f;
+        float powerPelletWeight = 1.0f;
 
         (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
         (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
