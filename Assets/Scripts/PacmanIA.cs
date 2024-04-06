@@ -12,12 +12,16 @@ public class PacmanAI : MonoBehaviour
     private Pacman pacman;
     private Pellet pellet;
     private PowerPellet powerPellet;
+    private GameObject[] ghosts;
+
 
     private void Awake()
     {
         pacman = GetComponent<Pacman>();
         pellet = GetComponent<Pellet>();
         powerPellet = GetComponent<PowerPellet>();
+        ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+
     }
 
     void Start()
@@ -26,6 +30,7 @@ public class PacmanAI : MonoBehaviour
         nextDirection = currentDirection;
         availableDirections.Add(new Vector2(-1, 0));
         maxDistanceToGhosts = CalculateMaxDistanceToGhosts();
+
 
     }
 
@@ -41,7 +46,8 @@ public class PacmanAI : MonoBehaviour
         Node node = other.GetComponent<Node>();
         if (node != null)
         {
-            availableDirections = node.availableDirections;
+            availableDirections.Clear(); // Effacer les anciennes directions disponibles
+            availableDirections.AddRange(node.availableDirections); // Mettre à jour avec les nouvelles directions disponibles du nœud
         }
     }
 
@@ -83,6 +89,9 @@ public class PacmanAI : MonoBehaviour
             if (weightedScore1 > weightedScore3)
             {
                 nextDirection = directionDistanceToTarget;
+            }else
+            {
+                nextDirection = directionPowerPellet;
             }
         }
         if (weightedScore2 >= weightedScore1)
@@ -91,10 +100,14 @@ public class PacmanAI : MonoBehaviour
             {
                 nextDirection = directionAvoidGhosts;
             }
+<<<<<<< HEAD
         }
         if (weightedScore3 > weightedScore1)
         {
             if (weightedScore3 > weightedScore2)
+=======
+            else
+>>>>>>> 6ab9b3ae4c3bed4d9257ba0baa28040be77bfd40
             {
                 nextDirection = directionPowerPellet;
             }
@@ -175,6 +188,8 @@ public class PacmanAI : MonoBehaviour
 
         foreach (Vector2 direction in availableDirections)
         {
+            print("IM INNN");
+            print(direction);
             Vector3 newPosition = transform.position + new Vector3(direction.x, direction.y);
             float distanceToGhosts = CalculateDistanceToGhosts(newPosition);
 
@@ -185,6 +200,10 @@ public class PacmanAI : MonoBehaviour
             if (score > bestScore)
             {
                 bestScore = score;
+                bestDirection = direction;
+            }
+            else
+            {
                 bestDirection = -direction;
             }
             if (distanceToGhosts < 0.2f)
@@ -193,12 +212,11 @@ public class PacmanAI : MonoBehaviour
             }
         }
 
-        return (bestDirection, bestScore);
+        return (bestDirection, 1-bestScore);
     }
 
     private float CalculateMaxDistanceToGhosts()
     {
-        GameObject[] ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         float maxDistance = 0;
 
         foreach (var ghost in ghosts)
@@ -215,7 +233,6 @@ public class PacmanAI : MonoBehaviour
 
     private float CalculateDistanceToGhosts(Vector3 position)
     {
-        GameObject[] ghosts = GameObject.FindGameObjectsWithTag("Ghost");
         float minDistanceToGhosts = float.MaxValue;
 
         foreach (var ghost in ghosts)
