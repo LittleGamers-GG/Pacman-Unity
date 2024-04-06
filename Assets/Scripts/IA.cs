@@ -13,6 +13,7 @@ public class IA : MonoBehaviour
     private void Awake()
     {
         pacman = GetComponent<Pacman>();
+  
     }
 
     private void OnTriggerEnter2D(Collider2D other)
