@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5210854924316708543}
   - component: {fileID: 5210854924316708528}
   - component: {fileID: 4380254421658792248}
-  - component: {fileID: 5915848830766055504}
   m_Layer: 10
   m_Name: Node
   m_TagString: Untagged
@@ -94,16 +93,3 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 512
---- !u!114 &5915848830766055504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5210854924316708529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bafd0efb911a704ab6aad0a72389b30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isNodeCollidingWithPacman: 0

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6038318316045854514}
   - component: {fileID: 6038318316045854519}
   - component: {fileID: 6038318316045854515}
-  - component: {fileID: 3178876579161278653}
+  - component: {fileID: 2940670044146347085}
   m_Layer: 6
   m_Name: Pacman
   m_TagString: Untagged
@@ -203,7 +203,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e3b83262a412c74408dba5cbe89f43f5, type: 3}
   animationTime: 0.125
   loop: 1
---- !u!114 &3178876579161278653
+--- !u!114 &2940670044146347085
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,7 +212,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6038318316045854526}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f4e3d5169c8d6d44b8ab1eeae909b2f, type: 3}
+  m_Script: {fileID: 11500000, guid: 52dd9d8f218e97a41bb5fcd94083ba6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
