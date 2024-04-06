@@ -53,9 +53,17 @@ public class PacmanAI : MonoBehaviour
 
     private Vector2 UpdateDirection()
     {
-        float distanceToTargetWeight = 1.0f;
         float avoidGhostsWeight = 1.0f;
-        float powerPelletWeight = 1.0f;
+        foreach (var ghost in GameObject.FindGameObjectsWithTag("Ghost"))
+        {
+            Ghost ghostTemp = ghost.GetComponent<Ghost>();
+            if (ghostTemp.frightened)
+            {
+                avoidGhostsWeight = 0.0f;
+            }
+        }
+        float distanceToTargetWeight = 1.2f;
+        float powerPelletWeight = 0.8f;
 
         (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
         (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
@@ -70,23 +78,23 @@ public class PacmanAI : MonoBehaviour
         float weightedScore2 = score2 * avoidGhostsWeight;
         float weightedScore3 = score3 * powerPelletWeight;
 
-        if (weightedScore1 >= weightedScore2)
+        if (weightedScore1 > weightedScore2)
         {
-            if (weightedScore1 >= weightedScore3)
+            if (weightedScore1 > weightedScore3)
             {
                 nextDirection = directionDistanceToTarget;
             }
         }
-        else if (weightedScore2 >= weightedScore1)
+        if (weightedScore2 >= weightedScore1)
         {
             if (weightedScore2 >= weightedScore3)
             {
                 nextDirection = directionAvoidGhosts;
             }
         }
-        else if (weightedScore3 >= weightedScore1)
+        if (weightedScore3 > weightedScore1)
         {
-            if (weightedScore3 >= weightedScore2)
+            if (weightedScore3 > weightedScore2)
             {
                 nextDirection = directionPowerPellet;
             }
@@ -106,8 +114,8 @@ public class PacmanAI : MonoBehaviour
         foreach (Vector2 availableDirection in availableDirections)
         {
             Vector3 newPosition = transform.position + new Vector3(availableDirection.x, availableDirection.y);
-            GameObject[] powerPellets = GameObject.FindGameObjectsWithTag("Pellet");
-            foreach (var pellet in powerPellets)
+            GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
+            foreach (var pellet in pellets)
             {
 
                 float distanceToTarget = Vector3.Distance(pellet.transform.position, newPosition);
@@ -161,6 +169,7 @@ public class PacmanAI : MonoBehaviour
 
     private (Vector2, float) GetDirectionAwayFromGhosts()
     {
+       
         Vector2 bestDirection = Vector2.zero;
         float bestScore = 0;
 
@@ -177,6 +186,10 @@ public class PacmanAI : MonoBehaviour
             {
                 bestScore = score;
                 bestDirection = -direction;
+            }
+            if (distanceToGhosts < 0.2f)
+            {
+                bestScore = 3;
             }
         }
 

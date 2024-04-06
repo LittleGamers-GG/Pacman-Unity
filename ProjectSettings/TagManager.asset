@@ -6,6 +6,8 @@ TagManager:
   tags:
   - PacmanCollider
   - Ghost
+  - Pellet
+  - PowerPellet
   layers:
   - Default
   - TransparentFX
