@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class PacmanAI : MonoBehaviour
 {
@@ -67,22 +68,29 @@ public class PacmanAI : MonoBehaviour
             {
                 avoidGhostsWeight = 0.0f;
             }
+            else if(Math.Abs(ghostTemp.transform.position.x - transform.position.x) < 2f && Math.Abs(ghostTemp.transform.position.y - transform.position.y) < 2f)
+            {
+                avoidGhostsWeight = 3.0f;
+            }
         }
         float distanceToTargetWeight = 1.2f;
-        float powerPelletWeight = 0.8f;
+        float powerPelletWeight = 0.9f;
 
         (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
         (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
         (Vector2 directionPowerPellet, float score3) = GetDirectionWithMinDistanceToPowerPellet();
-        Debug.Log("Direction 1 :" + directionDistanceToTarget + "Score 1 : " + score1);
-        Debug.Log("Direction 2 :" + directionAvoidGhosts + "Score 2 : " + score2);
-        Debug.Log("Direction 3 :" + directionPowerPellet + "Score 3 : " + score3);
+       
         Vector2 nextDirection = Vector2.zero;
 
         // Combine all heuristics
         float weightedScore1 = score1 * distanceToTargetWeight;
         float weightedScore2 = score2 * avoidGhostsWeight;
         float weightedScore3 = score3 * powerPelletWeight;
+
+        Debug.Log("Direction 1 :" + directionDistanceToTarget + "Score 1 : " + weightedScore1);
+        Debug.Log("Direction 2 :" + directionAvoidGhosts + "Score 2 : " + weightedScore2);
+        Debug.Log("Direction 3 :" + directionPowerPellet + "Score 3 : " + weightedScore3);
+
 
         if (weightedScore1 > weightedScore2)
         {
@@ -100,14 +108,11 @@ public class PacmanAI : MonoBehaviour
             {
                 nextDirection = directionAvoidGhosts;
             }
-<<<<<<< HEAD
+
         }
         if (weightedScore3 > weightedScore1)
         {
             if (weightedScore3 > weightedScore2)
-=======
-            else
->>>>>>> 6ab9b3ae4c3bed4d9257ba0baa28040be77bfd40
             {
                 nextDirection = directionPowerPellet;
             }
@@ -188,7 +193,6 @@ public class PacmanAI : MonoBehaviour
 
         foreach (Vector2 direction in availableDirections)
         {
-            print("IM INNN");
             print(direction);
             Vector3 newPosition = transform.position + new Vector3(direction.x, direction.y);
             float distanceToGhosts = CalculateDistanceToGhosts(newPosition);
@@ -205,10 +209,6 @@ public class PacmanAI : MonoBehaviour
             else
             {
                 bestDirection = -direction;
-            }
-            if (distanceToGhosts < 0.2f)
-            {
-                bestScore = 3;
             }
         }
 
