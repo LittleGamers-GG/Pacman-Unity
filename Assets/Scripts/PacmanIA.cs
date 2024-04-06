@@ -31,7 +31,7 @@ public class PacmanAI : MonoBehaviour
     void Update()
     {
         nextDirection = UpdateDirection();
- 
+        print("Next Direction :" + nextDirection.x + ", " + nextDirection.y);
         Move(nextDirection);
     }
 
@@ -43,83 +43,110 @@ public class PacmanAI : MonoBehaviour
             availableDirections = node.availableDirections;
         }
     }
-        Vector2 UpdateDirection()
-    {
-        if (availableDirections.Count > 0)
-        {
-            print("I am in");
-            // Combine all heuristics
-            float distanceToTargetWeight = 2.0f;
-            float randomDirectionWeight = 0.5f;
-            float avoidGhostsWeight = 0.8f;
 
-            (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
-            Vector2 directionRandom = availableDirections[Random.Range(0, availableDirections.Count)];
-            (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
-            
-            if( score1 * distanceToTargetWeight > score2 * avoidGhostsWeight )
-                nextDirection = directionDistanceToTarget;
-            
-            if (score1 * distanceToTargetWeight > score2 * avoidGhostsWeight)
-                nextDirection = directionAvoidGhosts;
+    private Vector2 UpdateDirection()
+    {
+        float distanceToTargetWeight = 2.0f;
+        float randomDirectionWeight = 0.5f;
+        float avoidGhostsWeight = 0.8f;
+
+        (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
+        Vector2 directionRandom = availableDirections[Random.Range(0, availableDirections.Count)];
+        (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
+
+        Vector2 nextDirection = Vector2.zero;
+
+        // Combine all heuristics
+        float weightedScore1 = score1 * distanceToTargetWeight;
+        float weightedScore2 = score2 * avoidGhostsWeight;
+
+        if (weightedScore1 >= weightedScore2)
+        {
+            nextDirection = directionDistanceToTarget;
         }
-        print("Next:" + nextDirection);
+        else
+        {
+            nextDirection = directionAvoidGhosts;
+        }
+
+        print("Next: " + nextDirection + " Score1 : " + score1 + " Score2 : " + score2);
         return nextDirection;
     }
-    (Vector2,float) GetDirectionWithMinDistanceToTarget()
+
+
+
+    private (Vector2, float) GetDirectionWithMinDistanceToTarget()
     {
         float minDistance = float.MaxValue;
         Vector2 bestDirection = Vector2.zero;
-        float score = 0;
+        float bestScore = 0;
+
         foreach (Vector2 availableDirection in availableDirections)
         {
             Vector3 newPosition = transform.position + new Vector3(availableDirection.x, availableDirection.y);
             float distanceToTarget = (target.transform.position - newPosition).sqrMagnitude;
-            if (distanceToTarget < minDistance)
+
+            // Calculer un score basé sur la distance à la cible
+            // Plus la distance est courte, plus le score est élevé
+            float score = distanceToTarget%1; // Utilisation de 1 / (distance + 1) pour éviter une division par zéro
+
+            // Mettre à jour la meilleure direction et le meilleur score si nécessaire
+            if (score > bestScore)
             {
-                minDistance = distanceToTarget;
+                bestScore = score;
                 bestDirection = availableDirection;
-                score = 1;
             }
         }
-        print(bestDirection);
-        return (bestDirection,score);
+
+        return (bestDirection, bestScore);
     }
 
-   (Vector2,float) GetDirectionAwayFromGhosts()
+    private (Vector2, float) GetDirectionAwayFromGhosts()
     {
-        Vector2 bestDirection = Vector3.zero;
-        float score = 0;
+        Vector2 bestDirection = Vector2.zero;
+        float bestDistanceToGhosts = float.MaxValue;
+
         foreach (Vector2 direction in availableDirections)
         {
             Vector3 newPosition = transform.position + new Vector3(direction.x, direction.y);
-            GameObject[] ghosts = GameObject.FindGameObjectsWithTag("Ghost");
-            bool isSafeDirection = true;
-            float distanceToGhost = 0;
-            foreach (var ghost in ghosts)
+            float distanceToGhosts = CalculateDistanceToGhosts(newPosition);
+            print("Distance to Ghost : " + distanceToGhosts);
+            // Si la position hypothétique est sûre et plus éloignée des fantômes que la meilleure direction actuelle
+            if (distanceToGhosts > 1.5f && distanceToGhosts < bestDistanceToGhosts)
             {
-                if (!ghost.GetComponent<Ghost>().frightened) 
-                {
-                    distanceToGhost = Vector3.Distance(newPosition, ghost.transform.position);
-                    if (distanceToGhost < 1.5f) // Adjust this threshold according to your game
-                    {
-                        isSafeDirection = false;
-
-                        break;
-                    }
-                }
-            }
-
-            if (!isSafeDirection)
-            {
-                bestDirection = new Vector3(-direction.x, -direction.y); ;
-                score = 1.5f - distanceToGhost;
+                bestDistanceToGhosts = distanceToGhosts;
+                bestDirection = direction;
             }
         }
-        
 
-        return (bestDirection, score) ;
+        float score = bestDistanceToGhosts%1; // Calcul du score en fonction de la distance aux fantômes
+
+        print("Ghost Direction: " + bestDirection + " Score: " + score);
+        return (bestDirection, score);
     }
+
+    // Fonction pour calculer la distance à tous les fantômes
+    private float CalculateDistanceToGhosts(Vector3 position)
+    {
+        GameObject[] ghosts = GameObject.FindGameObjectsWithTag("Ghost");
+        float minDistanceToGhosts = float.MaxValue;
+
+        foreach (var ghost in ghosts)
+        {
+            Debug.Log("Ghosts : " + ghost.GetComponent<Ghost>().frightened.enabled);
+
+            if (!ghost.GetComponent<Ghost>().frightened.enabled)
+            {
+                float distanceToGhost = Vector3.Distance(position, ghost.transform.position);
+                minDistanceToGhosts = Mathf.Min(minDistanceToGhosts, distanceToGhost);
+            }
+            Debug.Log("Ghosts : " + ghosts + "Min distance /" + minDistanceToGhosts);
+
+        }
+
+        return minDistanceToGhosts;
+    }
+
 
     bool IsValidPosition(Vector3 position)
     {
