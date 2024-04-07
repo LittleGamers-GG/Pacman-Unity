@@ -61,7 +61,7 @@ public class PacmanAI : MonoBehaviour
     {
         // Poids des différentes heuristiques
         float distanceToTargetWeight = 1.5f;
-        float powerPelletWeight = 1.0f;
+        float powerPelletWeight = 1.2f;
         float avoidGhostsWeight = 1.0f;
 
         // Boucle à travers tous les fantômes
@@ -75,8 +75,8 @@ public class PacmanAI : MonoBehaviour
                 avoidGhostsWeight = 0.0f;
             }
             // Si un fantôme est trop proche, augmenter la pondération pour éviter les fantômes
-            else if (Mathf.Abs(ghostTemp.transform.position.x - transform.position.x) < 4f &&
-                     Mathf.Abs(ghostTemp.transform.position.y - transform.position.y) < 4f && !ghostTemp.home.enabled)
+            else if (Mathf.Abs(ghostTemp.transform.position.x - transform.position.x) < 5f &&
+                     Mathf.Abs(ghostTemp.transform.position.y - transform.position.y) < 5f && !ghostTemp.home.enabled)
             {
                 avoidGhostsWeight = 2.0f;
             }
@@ -86,8 +86,8 @@ public class PacmanAI : MonoBehaviour
             PowerPellet powerPellet = powerPelletTemp.GetComponent<PowerPellet>();
 
             // Si un fantôme est effrayé, ne pas éviter les fantômes (pondération de 0)
-            if (Mathf.Abs(powerPellet.transform.position.x - transform.position.x) < 2f &&
-                     Mathf.Abs(powerPellet.transform.position.y - transform.position.y) < 2f)
+            if (Mathf.Abs(powerPellet.transform.position.x - transform.position.x) < 3.5f &&
+                     Mathf.Abs(powerPellet.transform.position.y - transform.position.y) < 3.5f)
             {
                 powerPelletWeight = 3.0f;
             }
@@ -152,7 +152,7 @@ public class PacmanAI : MonoBehaviour
                 float score = 1 - (distanceToTarget / maxDistance); // Score normalisé entre 0 et 1
 
                 // Mettre à jour la meilleure direction et le meilleur score si nécessaire
-                if (score > bestScore)
+                if (score >= bestScore)
                 {
                     bestScore = score;
                     bestDirection = availableDirection;
