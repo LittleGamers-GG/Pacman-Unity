@@ -57,32 +57,43 @@ public class PacmanAI : MonoBehaviour
         // Move Pacman in the calculated direction
         pacman.movement.SetDirection(direction);
     }
-
     private Vector2 UpdateDirection()
     {
         float avoidGhostsWeight = 1.0f;
+
+        // Boucle à travers tous les fantômes
         foreach (var ghost in GameObject.FindGameObjectsWithTag("Ghost"))
         {
             Ghost ghostTemp = ghost.GetComponent<Ghost>();
-            if (ghostTemp.frightened)
+
+            // Si un fantôme est effrayé, ne pas éviter les fantômes (pondération de 0)
+            if (ghostTemp.frightened.enabled)
             {
                 avoidGhostsWeight = 0.0f;
             }
-            else if(Math.Abs(ghostTemp.transform.position.x - transform.position.x) < 2f && Math.Abs(ghostTemp.transform.position.y - transform.position.y) < 2f)
+            // Si un fantôme est trop proche, augmenter la pondération pour éviter les fantômes
+            else if (Mathf.Abs(ghostTemp.transform.position.x - transform.position.x) < 4f &&
+                     Mathf.Abs(ghostTemp.transform.position.y - transform.position.y) < 4f)
             {
                 avoidGhostsWeight = 3.0f;
             }
         }
-        float distanceToTargetWeight = 1.2f;
-        float powerPelletWeight = 0.9f;
 
+        // Poids des différentes heuristiques
+        float distanceToTargetWeight = 2f;
+        float powerPelletWeight = 1f;
+
+        // Obtenir les directions et les scores pour chaque heuristique
         (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
         (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
         (Vector2 directionPowerPellet, float score3) = GetDirectionWithMinDistanceToPowerPellet();
+
        
+
+
         Vector2 nextDirection = Vector2.zero;
 
-        // Combine all heuristics
+        // Appliquer les pondérations aux scores
         float weightedScore1 = score1 * distanceToTargetWeight;
         float weightedScore2 = score2 * avoidGhostsWeight;
         float weightedScore3 = score3 * powerPelletWeight;
@@ -91,36 +102,25 @@ public class PacmanAI : MonoBehaviour
         Debug.Log("Direction 2 :" + directionAvoidGhosts + "Score 2 : " + weightedScore2);
         Debug.Log("Direction 3 :" + directionPowerPellet + "Score 3 : " + weightedScore3);
 
+        // Sélectionner la direction en fonction des scores pondérés
+        if (weightedScore1 > weightedScore2 && weightedScore1 > weightedScore3)
+        {
+            nextDirection = directionDistanceToTarget;
+        }
+        else if (weightedScore2 >= weightedScore1 && weightedScore2 >= weightedScore3)
+        {
+            nextDirection = directionAvoidGhosts;
+        }
+        else if (weightedScore3 > weightedScore1 && weightedScore3 > weightedScore2)
+        {
+            nextDirection = directionPowerPellet;
+        }
 
-        if (weightedScore1 > weightedScore2)
-        {
-            if (weightedScore1 > weightedScore3)
-            {
-                nextDirection = directionDistanceToTarget;
-            }else
-            {
-                nextDirection = directionPowerPellet;
-            }
-        }
-        if (weightedScore2 >= weightedScore1)
-        {
-            if (weightedScore2 >= weightedScore3)
-            {
-                nextDirection = directionAvoidGhosts;
-            }
-
-        }
-        if (weightedScore3 > weightedScore1)
-        {
-            if (weightedScore3 > weightedScore2)
-            {
-                nextDirection = directionPowerPellet;
-            }
-        }
         Debug.Log("NextDirection :" + nextDirection);
 
         return nextDirection;
     }
+
 
     private (Vector2, float) GetDirectionWithMinDistanceToTarget()
     {
@@ -187,33 +187,28 @@ public class PacmanAI : MonoBehaviour
 
     private (Vector2, float) GetDirectionAwayFromGhosts()
     {
-       
         Vector2 bestDirection = Vector2.zero;
         float bestScore = 0;
 
         foreach (Vector2 direction in availableDirections)
         {
-            print(direction);
             Vector3 newPosition = transform.position + new Vector3(direction.x, direction.y);
             float distanceToGhosts = CalculateDistanceToGhosts(newPosition);
 
-            // Calcul du score de sécurité (plus la distance aux fantômes est grande, plus le score est élevé)
-            float score = 1 - (distanceToGhosts / maxDistanceToGhosts); // Score normalisé entre 0 et 1
+            // Calcul du score en utilisant une échelle logarithmique et une pondération exponentielle
+            float score = Mathf.Exp(-distanceToGhosts / maxDistanceToGhosts);
 
             // Mettre à jour la meilleure direction et le meilleur score si nécessaire
             if (score > bestScore)
             {
                 bestScore = score;
-                bestDirection = direction;
-            }
-            else
-            {
                 bestDirection = -direction;
             }
         }
 
-        return (bestDirection, 1-bestScore);
+        return (bestDirection, bestScore);
     }
+
 
     private float CalculateMaxDistanceToGhosts()
     {
