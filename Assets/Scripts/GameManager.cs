@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Pacman pacman;
     [SerializeField] private Transform pellets;
     [SerializeField] private Text gameOverText;
+    [SerializeField] private Text winText;
     [SerializeField] private Text scoreText;
     [SerializeField] private Text livesText;
 
