@@ -516,6 +516,7 @@ MonoBehaviour:
   pacman: {fileID: 1575749643}
   pellets: {fileID: 1910537628}
   gameOverText: {fileID: 1133529214}
+  winText: {fileID: 1966149038}
   scoreText: {fileID: 1945791160}
   livesText: {fileID: 278868602}
 --- !u!4 &469897152

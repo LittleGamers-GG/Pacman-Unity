@@ -59,6 +59,9 @@ public class PacmanAI : MonoBehaviour
     }
     private Vector2 UpdateDirection()
     {
+        // Poids des différentes heuristiques
+        float distanceToTargetWeight = 1.5f;
+        float powerPelletWeight = 1.0f;
         float avoidGhostsWeight = 1.0f;
 
         // Boucle à travers tous les fantômes
@@ -67,22 +70,30 @@ public class PacmanAI : MonoBehaviour
             Ghost ghostTemp = ghost.GetComponent<Ghost>();
 
             // Si un fantôme est effrayé, ne pas éviter les fantômes (pondération de 0)
-            if (ghostTemp.frightened.enabled)
+            if (ghostTemp.frightened.enabled || ghostTemp.home.enabled)
             {
                 avoidGhostsWeight = 0.0f;
             }
             // Si un fantôme est trop proche, augmenter la pondération pour éviter les fantômes
             else if (Mathf.Abs(ghostTemp.transform.position.x - transform.position.x) < 4f &&
-                     Mathf.Abs(ghostTemp.transform.position.y - transform.position.y) < 4f)
+                     Mathf.Abs(ghostTemp.transform.position.y - transform.position.y) < 4f && !ghostTemp.home.enabled)
             {
-                avoidGhostsWeight = 3.0f;
+                avoidGhostsWeight = 2.0f;
+            }
+        }
+        foreach (var powerPelletTemp in GameObject.FindGameObjectsWithTag("PowerPellet"))
+        {
+            PowerPellet powerPellet = powerPelletTemp.GetComponent<PowerPellet>();
+
+            // Si un fantôme est effrayé, ne pas éviter les fantômes (pondération de 0)
+            if (Mathf.Abs(powerPellet.transform.position.x - transform.position.x) < 2f &&
+                     Mathf.Abs(powerPellet.transform.position.y - transform.position.y) < 2f)
+            {
+                powerPelletWeight = 3.0f;
             }
         }
 
-        // Poids des différentes heuristiques
-        float distanceToTargetWeight = 2f;
-        float powerPelletWeight = 1f;
-
+            
         // Obtenir les directions et les scores pour chaque heuristique
         (Vector2 directionDistanceToTarget, float score1) = GetDirectionWithMinDistanceToTarget();
         (Vector2 directionAvoidGhosts, float score2) = GetDirectionAwayFromGhosts();
@@ -125,7 +136,6 @@ public class PacmanAI : MonoBehaviour
     private (Vector2, float) GetDirectionWithMinDistanceToTarget()
     {
         float maxDistance = Vector3.Distance(Vector3.zero, new Vector3(20, 20, 0)); // Max possible distance
-        float minDistance = float.MaxValue;
         Vector2 bestDirection = Vector2.zero;
         float bestScore = 0;
 
@@ -156,7 +166,6 @@ public class PacmanAI : MonoBehaviour
     private (Vector2, float) GetDirectionWithMinDistanceToPowerPellet()
     {
         float maxDistance = Vector3.Distance(Vector3.zero, new Vector3(20, 20, 0)); // Max possible distance
-        //float minDistance = float.MaxValue;
         Vector2 bestDirection = Vector2.zero;
         float bestScore = 0;
 
@@ -201,8 +210,21 @@ public class PacmanAI : MonoBehaviour
             // Mettre à jour la meilleure direction et le meilleur score si nécessaire
             if (score > bestScore)
             {
-                bestScore = score;
-                bestDirection = -direction;
+                if (availableDirections.Contains(-direction))
+                {
+                    bestScore = score;
+                    bestDirection = -direction;
+                }
+                else if(availableDirections.Contains(new Vector2(direction.y, direction.x)))
+                {
+                    bestScore = score;
+                    bestDirection = new Vector2(direction.y, direction.x);
+                }
+                else
+                { 
+                    bestScore = score;
+                    bestDirection = new Vector2(-direction.y, -direction.x);
+                }
             }
         }
 

@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
         if (lives <= 0 && Input.anyKeyDown) {
             NewGame();
         }
+        Won();
     }
 
     private void NewGame()
@@ -52,6 +53,7 @@ public class GameManager : MonoBehaviour
     private void NewRound()
     {
         gameOverText.enabled = false;
+        winText.enabled = false;
 
         foreach (Transform pellet in pellets) {
             pellet.gameObject.SetActive(true);
@@ -67,6 +69,29 @@ public class GameManager : MonoBehaviour
         }
 
         pacman.ResetState();
+    }
+
+    private void Won()
+    {
+        bool control = true;
+        GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellet");
+        GameObject[] powerPellets = GameObject.FindGameObjectsWithTag("PowerPellet");
+        foreach (var pellet in pellets)
+        {
+            if (pellet.gameObject.activeSelf)
+            {
+                control = false;
+            }
+        }
+        foreach (var powerPellet in powerPellets)
+        {
+            if (powerPellet.gameObject.activeSelf)
+            {
+                control = false;
+            }
+        }
+
+        winText.enabled = control;
     }
 
     private void GameOver()
