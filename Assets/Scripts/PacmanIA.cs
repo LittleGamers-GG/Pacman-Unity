@@ -57,6 +57,7 @@ public class PacmanAI : MonoBehaviour
         // Move Pacman in the calculated direction
         pacman.movement.SetDirection(direction);
     }
+
     private Vector2 UpdateDirection()
     {
         // Poids des différentes heuristiques
@@ -85,7 +86,7 @@ public class PacmanAI : MonoBehaviour
         {
             PowerPellet powerPellet = powerPelletTemp.GetComponent<PowerPellet>();
 
-            // Si un fantôme est effrayé, ne pas éviter les fantômes (pondération de 0)
+            // Si le power-up est assez proche, on augmente la pondération
             if (Mathf.Abs(powerPellet.transform.position.x - transform.position.x) < 3.5f &&
                      Mathf.Abs(powerPellet.transform.position.y - transform.position.y) < 3.5f)
             {

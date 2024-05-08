@@ -17,7 +17,7 @@ public class Pacman : MonoBehaviour
         collider = GetComponent<Collider2D>();
     }
 
-    private void Update()               // SCRIPT A MODIFIER POUR IA TODOOOOOOOOOOOOOOOOOOO trouver heuristics
+    private void Update()               
     {
 
         /*
