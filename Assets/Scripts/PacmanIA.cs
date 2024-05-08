@@ -63,7 +63,7 @@ public class PacmanAI : MonoBehaviour
         // Poids des différentes heuristiques
         float distanceToTargetWeight = 1.5f;
         float powerPelletWeight = 1.2f;
-        float avoidGhostsWeight = 1.0f;
+        float avoidGhostsWeight = 1.4f;
 
         // Boucle à travers tous les fantômes
         foreach (var ghost in GameObject.FindGameObjectsWithTag("Ghost"))
